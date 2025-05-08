@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IntelliChat | AI Conversation Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">AI</div>
+                    IntelliChat
+                </div>
+                <button class="mobile-menu-toggle">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="sidebar-content">
+                <button class="new-chat-btn" id="newChatBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5v14M5 12h14"></path>
+                    </svg>
+                    New Chat
+                </button>
+                <div class="section-title">Conversations</div>
+                <div class="conversations-list" id="conversationsList">
+                    <!-- Conversations will be dynamically added here -->
+                </div>
+                <div class="section-title">Model</div>
+                <div class="model-selector" id="modelSelector">
+                    <div class="model-option selected" data-model="phi-2.Q5_0.gguf">
+                        <div class="model-icon">🤖</div>
+                        <div class="model-info">
+                            <div class="model-name">phi-2.Q5_0.gguf</div>
+                            <div class="model-description">Fast and efficient AI model</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="sidebar-footer">
+                <div class="sidebar-actions">
+                    <button class="action-btn theme-toggle" id="themeBtn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                    </button>
+                    <button class="action-btn" id="settingsBtn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path
+                                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                            </path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="user-info">
+                    <div class="user-avatar">U</div>
+                    <div class="user-details">
+                        <div class="user-name">User</div>
+                        <div class="user-plan">Free Plan</div>
+                    </div>
+                    <button class="user-menu-btn" id="userMenuBtn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="12" cy="12" r="1"></circle>
+                            <circle cx="12" cy="5" r="1"></circle>
+                            <circle cx="12" cy="19" r="1"></circle>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="main-container">
+            <div class="chat-header">
+                <div class="chat-title" id="chatTitle">IntelliChat</div>
+                <div class="chat-controls">
+                    <button class="control-btn" id="toolsBtn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15.5 9 16.5l1-3L19.5 4z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="chat-window" id="chatWindow">
+                <div class="welcome-container">
+                    <div class="welcome-title">Welcome to IntelliChat</div>
+                    <div class="welcome-subtitle">Your AI-powered conversation platform. Start exploring with these
+                        suggestions:</div>
+                    <div class="suggestion-cards">
+                        <div class="suggestion-card" data-message="Can you help me with a Python coding problem?">
+                            <div class="suggestion-title">Ask about coding</div>
+                            <div class="suggestion-description">Get help with programming questions or debug code.</div>
+                        </div>
+                        <div class="suggestion-card" data-message="What are the capabilities of IntelliChat?">
+                            <div class="suggestion-title">Explore AI capabilities</div>
+                            <div class="suggestion-description">Learn what IntelliChat can do for you.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="input-footer">
+                <div class="input-container">
+                    <div class="input-box">
+                        <textarea class="input-textarea" id="chatInput" placeholder="Type a message..."></textarea>
+                        <div class="input-buttons">
+                            <button class="attach-btn" id="attachBtn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path
+                                        d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48">
+                                    </path>
+                                </svg>
+                            </button>
+                            <button class="send-btn" id="sendBtn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <button class="mic-btn" id="micBtn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                            <line x1="12" y1="19" x2="12" y2="23"></line>
+                            <line x1="8" y1="23" x2="16" y2="23"></line>
+                        </svg>
+                    </button>
+                </div>
+                <div class="stats-display" id="metrics">
+                    <div class="stat-item">Tokens: 0</div>
+                    <div class="stat-item">Response Time: 0ms</div>
+                </div>
+                <div class="file-upload" id="fileUpload" style="display: none;">
+                    <input type="file" id="fileInput" multiple accept="image/*,application/pdf,text/plain">
+                    <div class="upload-icon">📎</div>
+                    <div class="upload-text">Drag and drop files here or click to upload</div>
+                    <div class="upload-hint">Supported formats: Images, PDFs, Text (max 5MB)</div>
+                </div>
+                <div class="file-preview-container" id="filePreviewContainer"></div>
+            </div>
+        </div>
+    </div>
+    <div class="sidebar-overlay"></div>
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // Initialize app state
+        let currentConversationId = null;
+        let conversations = JSON.parse(localStorage.getItem('conversations')) || {};
+        let tokenUsage = 0;
+        let isDarkMode = localStorage.getItem('theme') === 'dark';
+        let attachedFiles = [];
+        const maxFileSize = 5 * 1024 * 1024; // 5MB
+        const requestTimeout = 30000; // 30 seconds timeout
+
+        // DOM elements
+        const chatWindow = document.getElementById('chatWindow');
+        const chatInput = document.getElementById('chatInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const micBtn = document.getElementById('micBtn');
+        const themeBtn = document.getElementById('themeBtn');
+        const settingsBtn = document.getElementById('settingsBtn');
+        const metrics = document.getElementById('metrics');
+        const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+        const sidebar = document.querySelector('.sidebar');
+        const sidebarOverlay = document.querySelector('.sidebar-overlay');
+        const newChatBtn = document.getElementById('newChatBtn');
+        const conversationsList = document.getElementById('conversationsList');
+        const modelSelector = document.getElementById('modelSelector');
+        const chatTitle = document.getElementById('chatTitle');
+        const userMenuBtn = document.getElementById('userMenuBtn');
+        const toolsBtn = document.getElementById('toolsBtn');
+        const attachBtn = document.getElementById('attachBtn');
+        const fileUpload = document.getElementById('fileUpload');
+        const fileInput = document.getElementById('fileInput');
+        const filePreviewContainer = document.getElementById('filePreviewContainer');
+        const suggestionCards = document.querySelectorAll('.suggestion-card');
+
+        // Initialize theme
+        if (isDarkMode) {
+            document.body.classList.add('dark-theme');
+            themeBtn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg>`;
+        }
+
+        // Show onboarding if first time
+        if (!localStorage.getItem('onboardingShown')) {
+            showOnboarding();
+        }
+
+        // Render conversations
+        function renderConversations() {
+            conversationsList.innerHTML = '';
+            Object.keys(conversations).forEach(id => {
+                const conv = conversations[id];
+                const item = document.createElement('div');
+                item.className = `conversation-item ${currentConversationId === id ? 'active' : ''}`;
+                item.dataset.id = id;
+                item.innerHTML = `
+                    <span class="conv-title">${conv.title}</span>
+                    <div class="conv-actions">
+                        <button class="action-icon edit-conv" title="Edit">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 20h9"></path>
+                                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                            </svg>
+                        </button>
+                        <button class="action-icon delete-conv" title="Delete">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 6h18"></path>
+                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                                <path d="M3 6v14c0 1 1 2 2 2h14c1 0 2-1 2-2V6"></path>
+ W                               <path d="M8 10v8"></path>
+                                <path d="M12 10v8"></path>
+                                <path d="M16 10v8"></path>
+                            </svg>
+                        </button>
+                    </div>
+                `;
+                conversationsList.appendChild(item);
+            });
+            if (Object.keys(conversations).length === 0) {
+                conversationsList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📝</div>
+                        <div class="empty-title">No Conversations</div>
+                        <div class="empty-text">Start a new conversation by clicking "New Chat" above.</div>
+                    </div>
+                `;
+            }
+        }
+
+        // Load conversation messages
+        function loadConversation(id) {
+            currentConversationId = id;
+            chatTitle.textContent = conversations[id]?.title || 'IntelliChat';
+            chatWindow.innerHTML = '';
+            const messages = conversations[id]?.messages || [];
+            if (messages.length === 0) {
+                chatWindow.innerHTML = `
+                    <div class="welcome-container">
+                        <div class="welcome-title">Welcome to IntelliChat</div>
+                        <div class="welcome-subtitle">Your AI-powered conversation platform. Start exploring with these suggestions:</div>
+                        <div class="suggestion-cards">
+                            <div class="suggestion-card" data-message="Can you help me with a Python coding problem?">
+                                <div class="suggestion-title">Ask about coding</div>
+                                <div class="suggestion-description">Get help with programming questions or debug code.</div>
+                            </div>
+                            <div class="suggestion-card" data-message="What are the capabilities of IntelliChat?">
+                                <div class="suggestion-title">Explore AI capabilities</div>
+                                <div class="suggestion-description">Learn what IntelliChat can do for you.</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                messages.forEach(msg => appendMessage(msg.type, msg.text, msg.time, msg.files));
+            }
+            renderConversations();
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        // Create new conversation
+        function createNewConversation() {
+            const id = Date.now().toString();
+            conversations[id] = {
+                title: `Chat ${Object.keys(conversations).length + 1}`,
+                messages: [],
+                created: new Date().toISOString()
+            };
+            localStorage.setItem('conversations', JSON.stringify(conversations));
+            loadConversation(id);
+            showToast('Success', 'New conversation created', 'success');
+        }
+
+        // Append message to chat window
+        function appendMessage(type, text, time = new Date().toISOString(), files = []) {
+            if (chatWindow.querySelector('.welcome-container')) {
+                chatWindow.innerHTML = '';
+            }
+            const container = document.createElement('div');
+            container.className = `message-container ${type === 'user' ? 'user-container' : 'ai-container'}`;
+            container.dataset.time = time;
+            const formattedTime = new Date(time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            container.innerHTML = `
+                <div class="message-header">
+                    <div class="message-avatar ${type === 'user' ? 'user-avatar' : 'ai-avatar'}">${type === 'user' ? 'U' : 'AI'}</div>
+                    <div class="message-sender">${type === 'user' ? 'You' : 'IntelliChat'}</div>
+                    <div class="message-time">${formattedTime}</div>
+                </div>
+                <div class="message ${type === 'user' ? 'user-message' : 'ai-message'}">
+                    <div class="message-content">${marked.parse(text)}</div>
+                </div>
+                <div class="message-actions">
+                    <button class="action-icon copy-message" title="Copy">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15V9a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z"></path>
+                        </svg>
+                    </button>
+                    ${type === 'user' ? `
+                    <button class="action-icon edit-message" title="Edit">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 20h9"></path>
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                        </svg>
+                    </button>
+                    <button class="action-icon delete-message" title="Delete">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 6h18"></path>
+                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                            <path d="M3 6v14c0 1 1 2 2 2h14c1 0 2-1 2-2V6"></path>
+                            <path d="M8 10v8"></path>
+                            <path d="M12 10v8"></path>
+                            <path d="M16 10v8"></path>
+                        </svg>
+                    </button>
+                    ` : ''}
+                </div>
+            `;
+            files.forEach(file => {
+                const preview = document.createElement('div');
+                preview.className = 'file-preview';
+                preview.innerHTML = `
+                    <div class="file-icon">📄</div>
+                    <div class="file-info">
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-size">${(file.size / 1024).toFixed(2)} KB</div>
+                    </div>
+                    <button class="file-remove">×</button>
+                `;
+                container.appendChild(preview);
+            });
+            chatWindow.appendChild(container);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+            hljs.highlightAll();
+            return container;
+        }
+
+        // Save message to conversation
+        function saveMessage(type, text, files = []) {
+            if (!currentConversationId) {
+                createNewConversation();
+            }
+            const time = new Date().toISOString();
+            conversations[currentConversationId].messages.push({ type, text, time, files });
+            localStorage.setItem('conversations', JSON.stringify(conversations));
+        }
+
+        // Send message to server
+        async function sendMessage(message = chatInput.value.trim()) {
+            if (!message && attachedFiles.length === 0) {
+                showToast('Info', 'Please enter a message or attach a file', 'info');
+                return;
+            }
+            sendBtn.disabled = true; // Disable send button to prevent multiple submissions
+            const files = attachedFiles.map(file => ({
+                name: file.name,
+                size: file.size,
+                type: file.type
+            }));
+            appendMessage('user', message, new Date().toISOString(), files);
+            saveMessage('user', message, files);
+            chatInput.value = '';
+            attachedFiles = [];
+            updateFilePreviews();
+            fileUpload.style.display = 'none';
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'typing-indicator';
+            loadingDiv.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+            chatWindow.appendChild(loadingDiv);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+
+            try {
+                console.log('Sending message to server:', message);
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => {
+                    controller.abort();
+                    throw new Error('Request timed out');
+                }, requestTimeout);
+
+                const response = await fetch('http://localhost:5000/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message }),
+                    signal: controller.signal
+                });
+
+                clearTimeout(timeoutId);
+
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status} ${response.statusText}`);
+                }
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let botResponse = '';
+                const botMessageDiv = appendMessage('ai', '');
+                const startTime = performance.now();
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) {
+                        console.log('Stream complete');
+                        break;
+                    }
+                    const chunk = decoder.decode(value, { stream: true });
+                    console.log('Received chunk:', chunk);
+                    if (chunk) {
+                        botResponse += chunk;
+                        botMessageDiv.querySelector('.message-content').innerHTML = marked.parse(botResponse);
+                        hljs.highlightAll();
+                        chatWindow.scrollTop = chatWindow.scrollHeight;
+                    } else {
+                        console.warn('Received empty chunk');
+                    }
+                }
+
+                const endTime = performance.now();
+                if (!botResponse) {
+                    throw new Error('Received empty response from server');
+                }
+                tokenUsage += botResponse.length;
+                metrics.innerHTML = `
+                    <div class="stat-item">Tokens: ${tokenUsage}</div>
+                    <div class="stat-item">Response Time: ${Math.round(endTime - startTime)}ms</div>
+                `;
+                saveMessage('ai', botResponse);
+                chatWindow.removeChild(loadingDiv);
+                showToast('Success', 'Message received', 'success');
+            } catch (error) {
+                console.error('Error in sendMessage:', error);
+                chatWindow.removeChild(loadingDiv);
+                let errorMessage = 'Error: Unable to connect to the server. Please check if the server is running.';
+                if (error.name === 'AbortError') {
+                    errorMessage = 'Error: Request timed out. Please try again.';
+                } else if (error.message.includes('empty response')) {
+                    errorMessage = 'Error: Server returned an empty response.';
+                }
+                appendMessage('ai', errorMessage);
+                saveMessage('ai', errorMessage);
+                showToast('Error', errorMessage, 'error');
+            } finally {
+                sendBtn.disabled = false; // Re-enable send button
+            }
+        }
+
+        // Toggle theme
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            document.body.classList.toggle('dark-theme');
+            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+            themeBtn.innerHTML = isDarkMode
+                ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg>`
+                : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
+            showToast('Success', `Switched to ${isDarkMode ? 'dark' : 'light'} theme`, 'success');
+        }
+
+        // Toggle sidebar
+        function toggleSidebar() {
+            sidebar.classList.toggle('open');
+            sidebarOverlay.classList.toggle('active');
+        }
+
+        // Show toast notification
+        function showToast(title, message, type) {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+                <span class="toast-icon">${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+                <button class="toast-close">×</button>
+            `;
+            document.getElementById('toastContainer').appendChild(toast);
+            toast.querySelector('.toast-close').addEventListener('click', () => toast.remove());
+            setTimeout(() => toast.remove(), 5000);
+        }
+
+        // Show context menu
+        function showContextMenu(event, items) {
+            event.preventDefault();
+            const existingMenu = document.querySelector('.context-menu');
+            if (existingMenu) existingMenu.remove();
+            const menu = document.createElement('div');
+            menu.className = 'context-menu';
+            menu.style.top = `${event.pageY}px`;
+            menu.style.left = `${event.pageX}px`;
+            items.forEach(item => {
+                const menuItem = document.createElement('div');
+                menuItem.className = `menu-item ${item.danger ? 'danger' : ''}`;
+                menuItem.innerHTML = item.icon ? `${item.icon} ${item.label}` : item.label;
+                menuItem.addEventListener('click', () => {
+                    item.action();
+                    menu.remove();
+                });
+                menu.appendChild(menuItem);
+            });
+            document.body.appendChild(menu);
+            const removeMenu = () => {
+                menu.remove();
+                document.removeEventListener('click', removeMenu);
+            };
+            setTimeout(() => document.addEventListener('click', removeMenu), 0);
+        }
+
+        // Show settings modal
+        function showSettingsModal() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div class="modal-title">Settings</div>
+                        <button class="modal-close">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="settings-group">
+                            <div class="settings-title">Appearance</div>
+                            <div class="setting-item">
+                                <div class="setting-label">
+                                    <div class="setting-name">Dark Theme</div>
+                                    <div class="setting-description">Enable dark mode for better viewing</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" ${isDarkMode ? 'checked' : ''}>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="settings-group">
+                            <div class="settings-title">Chat Settings</div>
+                            <div class="setting-item">
+                                <div class="setting-label">
+                                    <div class="setting-name">Clear Conversations</div>
+                                    <div class="setting-description">Delete all conversation history</div>
+                                </div>
+                                <button class="btn btn-secondary clear-conversations">Clear</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary modal-close">Close</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            const closeModal = () => modal.remove();
+            modal.querySelectorAll('.modal-close').forEach(btn => btn.addEventListener('click', closeModal));
+            modal.querySelector('.toggle-switch input').addEventListener('change', toggleTheme);
+            modal.querySelector('.clear-conversations').addEventListener('click', () => {
+                conversations = {};
+                localStorage.setItem('conversations', JSON.stringify(conversations));
+                currentConversationId = null;
+                renderConversations();
+                chatWindow.innerHTML = `
+                    <div class="welcome-container">
+                        <div class="welcome-title">Welcome to IntelliChat</div>
+                        <div class="welcome-subtitle">Your AI-powered conversation platform. Start exploring with these suggestions:</div>
+                        <div class="suggestion-cards">
+                            <div class="suggestion-card" data-message="Can you help me with a Python coding problem?">
+                                <div class="suggestion-title">Ask about coding</div>
+                                <div class="suggestion-description">Get help with programming questions or debug code.</div>
+                            </div>
+                            <div class="suggestion-card" data-message="What are the capabilities of IntelliChat?">
+                                <div class="suggestion-title">Explore AI capabilities</div>
+                                <div class="suggestion-description">Learn what IntelliChat can do for you.</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                showToast('Success', 'All conversations cleared', 'success');
+                closeModal();
+            });
+        }
+
+        // Show tools panel
+        function showToolsPanel() {
+            const existingPanel = document.querySelector('.tools-panel');
+            if (existingPanel) existingPanel.remove();
+            const panel = document.createElement('div');
+            panel.className = 'tools-panel';
+            panel.innerHTML = `
+                <div class="tools-header">Tools</div>
+                <div class="tools-list">
+                    <div class="tool-item" data-tool="summarize">
+                        <div class="tool-icon">📝</div>
+                        <div class="tool-info">
+                            <div class="tool-name">Summarize</div>
+                            <div class="tool-description">Summarize the current conversation</div>
+                        </div>
+                    </div>
+                    <div class="tool-item" data-tool="analyze">
+                        <div class="tool-icon">📊</div>
+                        <div class="tool-info">
+                            <div class="tool-name">Analyze</div>
+                            <div class="tool-description">Analyze conversation insights</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(panel);
+            const removePanel = () => {
+                panel.remove();
+                document.removeEventListener('click', removePanel);
+            };
+            setTimeout(() => document.addEventListener('click', removePanel), 0);
+            panel.querySelectorAll('.tool-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const tool = item.dataset.tool;
+                    showToast('Info', `${tool.charAt(0).toUpperCase() + tool.slice(1)} tool activated`, 'info');
+                    removePanel();
+                });
+            });
+        }
+
+        // Update file previews
+        function updateFilePreviews() {
+            filePreviewContainer.innerHTML = '';
+            attachedFiles.forEach((file, index) => {
+                const preview = document.createElement('div');
+                preview.className = 'file-preview';
+                preview.innerHTML = `
+                    <div class="file-icon">📄</div>
+                    <div class="file-info">
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-size">${(file.size / 1024).toFixed(2)} KB</div>
+                    </div>
+                    <button class="file-remove">×</button>
+                `;
+                preview.querySelector('.file-remove').addEventListener('click', () => {
+                    attachedFiles.splice(index, 1);
+                    updateFilePreviews();
+                    if (attachedFiles.length === 0) fileUpload.style.display = 'none';
+                });
+                filePreviewContainer.appendChild(preview);
+            });
+        }
+
+        // Show onboarding modal
+        function showOnboarding() {
+            const overlay = document.createElement('div');
+            overlay.className = 'onboarding-overlay';
+            overlay.innerHTML = `
+                <div class="onboarding-modal">
+                    <div class="onboarding-header">
+                        <div class="onboarding-logo">AI</div>
+                        <div class="onboarding-title">Welcome to IntelliChat</div>
+                        <div class="onboarding-subtitle">Get started with your AI conversation platform</div>
+                    </div>
+                    <div class="onboarding-steps">
+                        <div class="onboarding-step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <div class="step-title">Start a Conversation</div>
+                                <div class="step-description">Click "New Chat" to begin a new conversation with IntelliChat.</div>
+                            </div>
+                        </div>
+                        <div class="onboarding-step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <div class="step-title">Choose a Model</div>
+                                <div class="step-description">Select an AI model from the sidebar to customize your experience.</div>
+                            </div>
+                        </div>
+                        <div class="onboarding-step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <div class="step-title">Explore Tools</div>
+                                <div class="step-description">Use tools like summarize or analyze to get more from your conversations.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="onboarding-footer">
+                        <button class="btn btn-primary" id="onboardingDone">Get Started</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            overlay.querySelector('#onboardingDone').addEventListener('click', () => {
+                localStorage.setItem('onboardingShown', 'true');
+                overlay.remove();
+            });
+        }
+
+        // Event listeners
+        sendBtn.addEventListener('click', () => sendMessage());
+        chatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+        themeBtn.addEventListener('click', toggleTheme);
+        mobileMenuToggle.addEventListener('click', toggleSidebar);
+        sidebarOverlay.addEventListener('click', toggleSidebar);
+        newChatBtn.addEventListener('click', createNewConversation);
+        settingsBtn.addEventListener('click', showSettingsModal);
+        toolsBtn.addEventListener('click', showToolsPanel);
+        attachBtn.addEventListener('click', () => {
+            fileUpload.style.display = fileUpload.style.display === 'none' ? 'block' : 'none';
+        });
+        fileInput.addEventListener('change', () => {
+            const files = Array.from(fileInput.files);
+            files.forEach(file => {
+                if (file.size > maxFileSize) {
+                    showToast('Error', `${file.name} exceeds 5MB limit`, 'error');
+                    return;
+                }
+                if (!['image/jpeg', 'image/png', 'application/pdf', 'text/plain'].includes(file.type)) {
+                    showToast('Error', `Unsupported file type: ${file.name}`, 'error');
+                    return;
+                }
+                attachedFiles.push(file);
+            });
+            fileInput.value = '';
+            updateFilePreviews();
+        });
+        suggestionCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const message = card.dataset.message;
+                chatInput.value = message;
+                sendMessage(message);
+            });
+        });
+        conversationsList.addEventListener('click', (e) => {
+            const item = e.target.closest('.conversation-item');
+            if (!item) return;
+            const id = item.dataset.id;
+            if (e.target.closest('.edit-conv')) {
+                const newTitle = prompt('Enter new conversation title:', conversations[id].title);
+                if (newTitle) {
+                    conversations[id].title = newTitle;
+                    localStorage.setItem('conversations', JSON.stringify(conversations));
+                    renderConversations();
+                    if (currentConversationId === id) chatTitle.textContent = newTitle;
+                    showToast('Success', 'Conversation renamed', 'success');
+                }
+            } else if (e.target.closest('.delete-conv')) {
+                if (confirm('Delete this conversation?')) {
+                    delete conversations[id];
+                    localStorage.setItem('conversations', JSON.stringify(conversations));
+                    if (currentConversationId === id) {
+                        currentConversationId = null;
+                        chatWindow.innerHTML = `
+                            <div class="welcome-container">
+                                <div class="welcome-title">Welcome to IntelliChat</div>
+                                <div class="welcome-subtitle">Your AI-powered conversation platform. Start exploring with these suggestions:</div>
+                                <div class="suggestion-cards">
+                                    <div class="suggestion-card" data-message="Can you help me with a Python coding problem?">
+                                        <div class="suggestion-title">Ask about coding</div>
+                                        <div class="suggestion-description">Get help with programming questions or debug code.</div>
+                                    </div>
+                                    <div class="suggestion-card" data-message="What are the capabilities of IntelliChat?">
+                                        <div class="suggestion-title">Explore AI capabilities</div>
+                                        <div class="suggestion-description">Learn what IntelliChat can do for you.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        chatTitle.textContent = 'IntelliChat';
+                    }
+                    renderConversations();
+                    showToast('Success', 'Conversation deleted', 'success');
+                }
+            } else {
+                loadConversation(id);
+            }
+        });
+        chatWindow.addEventListener('click', (e) => {
+            const container = e.target.closest('.message-container');
+            if (!container) return;
+            if (e.target.closest('.copy-message')) {
+                const text = container.querySelector('.message-content').textContent;
+                navigator.clipboard.writeText(text);
+                showToast('Success', 'Message copied to clipboard', 'success');
+            } else if (e.target.closest('.edit-message')) {
+                const messageContent = container.querySelector('.message-content');
+                const originalText = conversations[currentConversationId].messages.find(msg => msg.time === container.dataset.time).text;
+                const newText = prompt('Edit message:', originalText);
+                if (newText !== null) {
+                    messageContent.innerHTML = marked.parse(newText);
+                    conversations[currentConversationId].messages.find(msg => msg.time === container.dataset.time).text = newText;
+                    localStorage.setItem('conversations', JSON.stringify(conversations));
+                    showToast('Success', 'Message edited', 'success');
+                }
+            } else if (e.target.closest('.delete-message')) {
+                if (confirm('Delete this message?')) {
+                    conversations[currentConversationId].messages = conversations[currentConversationId].messages.filter(msg => msg.time !== container.dataset.time);
+                    localStorage.setItem('conversations', JSON.stringify(conversations));
+                    container.remove();
+                    if (conversations[currentConversationId].messages.length === 0) {
+                        chatWindow.innerHTML = `
+                            <div class="welcome-container">
+                                <div class="welcome-title">Welcome to IntelliChat</div>
+                                <div class="welcome-subtitle">Your AI-powered conversation platform. Start exploring with these suggestions:</div>
+                                <div class="suggestion-cards">
+                                    <div class="suggestion-card" data-message="Can you help me with a Python coding problem?">
+                                        <div class="suggestion-title">Ask about coding</div>
+                                        <div class="suggestion-description">Get help with programming questions or debug code.</div>
+                                    </div>
+                                    <div class="suggestion-card" data-message="What are the capabilities of IntelliChat?">
+                                        <div class="suggestion-title">Explore AI capabilities</div>
+                                        <div class="suggestion-description">Learn what IntelliChat can do for you.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    showToast('Success', 'Message deleted', 'success');
+                }
+            }
+        });
+        userMenuBtn.addEventListener('click', (e) => {
+            showContextMenu(e, [
+                {
+                    label: 'Profile',
+                    icon: '👤',
+                    action: () => showToast('Info', 'Profile settings not implemented', 'info')
+                },
+                {
+                    label: 'Logout',
+                    icon: '🚪',
+                    danger: true,
+                    action: () => showToast('Info', 'Logout not implemented', 'info')
+                }
+            ]);
+        });
+        modelSelector.addEventListener('click', (e) => {
+            const option = e.target.closest('.model-option');
+            if (!option) return;
+            document.querySelectorAll('.model-option').forEach(opt => opt.classList.remove('selected'));
+            option.classList.add('selected');
+            showToast('Success', `Model switched to ${option.dataset.model}`, 'success');
+        });
+
+        // Initialize
+        renderConversations();
+        if (Object.keys(conversations).length > 0) {
+            loadConversation(Object.keys(conversations)[0]);
+        }
+    </script>
+</body>
+
+</html>
